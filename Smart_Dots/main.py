@@ -1,38 +1,41 @@
 import pygame
 from population import Population
+from goal import Goal
 from settings import *
 
-pygame.init()
+def main():
+    pygame.init()
 
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Smart Dots")
+    screen = pygame.display.set_mode((WIDTH, HEIGHT))
+    pygame.display.set_caption("Smart Dots")
 
-# img = pygame.image.load('gfg_image.jpg')
+    # img = pygame.image.load('gfg_image.jpg')
+    # pygame.display.set_icon(img)
 
-# Set image as icon
-# pygame.display.set_icon(img)
+    clock = pygame.time.Clock()
+    Pop = Population()
+    goal = Goal()
 
-clock = pygame.time.Clock()
+    running = True
+    while running:
+        screen.fill(WHITE)
 
-Pop = Population()
+        goal.show(screen)
 
-goal = pygame.Vector2((WIDTH - 4) // 2, 50)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
 
-running = True
-while running:
-    screen.fill(WHITE)
+        if Pop.check_all_dots_dead():
+            Pop.new_generation(goal)
+        else:
+            Pop.update(goal)
+            Pop.show(screen)
 
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-    
-    Pop.update()
-    Pop.show(screen)
+        pygame.display.flip()
+        clock.tick(FPS)
 
-    pygame.draw.circle(screen, RED, goal, 7)
-    pygame.draw.circle(screen, BLACK, goal, 7, 2)
+    pygame.quit()
 
-    pygame.display.flip()
-    clock.tick(FPS)
-
-pygame.quit()
+if __name__ == "__main__":
+    main()
