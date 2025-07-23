@@ -1,6 +1,6 @@
 import random
 from dot import Dot
-from settings import POPULATION_SIZE, BRAIN_SIZE, MUTATION_CHANCE
+from settings import POPULATION_SIZE, MUTATION_CHANCE, GREEN
 
 class Population:
    def __init__ (self):
@@ -18,9 +18,23 @@ class Population:
       for dot in self.Dots:
          dot.update(goal)
    
-   def calculate_fitness(self, goal):
+   def reset_champion(self):
       for dot in self.Dots:
-         dot.calculate_fitness(goal)
+         if dot.champion is True:
+            dot.champion = False
+            break
+
+   def calculate_fitness(self, goal):
+      max_fitness = 0
+      max_index = -1
+      self.reset_champion()
+      for i in range(len(self.Dots)):
+         self.Dots[i].calculate_fitness(goal)
+         if max_fitness < self.Dots[i].fitness:
+            max_fitness = self.Dots[i].fitness
+            max_index = i
+      if max_index is not -1:
+         self.Dots[max_index].champion = True
    
    def check_all_dots_dead(self):
       for dot in self.Dots:
