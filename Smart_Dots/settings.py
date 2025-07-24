@@ -6,6 +6,7 @@ MUTATION_CHANCE = 0.01 # 1% chance for a dot to mutate
 FPS = 60
 
 WHITE  = (255, 255, 255)
+CYAN = (0, 255, 255)
 GREEN = (0, 255, 0)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)

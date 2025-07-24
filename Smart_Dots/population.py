@@ -1,10 +1,12 @@
 import random
+import sys
 from dot import Dot
-from settings import POPULATION_SIZE, MUTATION_CHANCE, GREEN
+from settings import POPULATION_SIZE, MUTATION_CHANCE, BRAIN_SIZE
 
 class Population:
    def __init__ (self):
       self.Dots = [Dot() for _ in range(POPULATION_SIZE)]
+      self.max_steps = BRAIN_SIZE
 
    def reset(self):
       for dot in self.Dots:
@@ -16,49 +18,66 @@ class Population:
 
    def update(self, goal):
       for dot in self.Dots:
-         dot.update(goal)
+         if dot.Brain.step > self.max_steps:
+            dot.dead = True
+         else:
+            dot.update(goal)
    
    def reset_champion(self):
       for dot in self.Dots:
-         if dot.champion is True:
+         if dot.champion:
             dot.champion = False
             break
 
    def calculate_fitness(self, goal):
       max_fitness = 0
+      min_fitness = sys.maxsize
       max_index = -1
+      min_index = -1
       self.reset_champion()
       for i in range(len(self.Dots)):
          self.Dots[i].calculate_fitness(goal)
          if max_fitness < self.Dots[i].fitness:
             max_fitness = self.Dots[i].fitness
             max_index = i
-      if max_index is not -1:
+         elif min_fitness > self.Dots[i].fitness:
+            min_fitness = self.Dots[i].fitness
+            min_index = i
+      if max_index != -1:
          self.Dots[max_index].champion = True
+         self.max_steps = self.Dots[max_index].Brain.step
+      return max_index, min_index
    
    def check_all_dots_dead(self):
       for dot in self.Dots:
-         if dot.dead is False and dot.reach_goal is False:
+         if not dot.dead and not dot.reach_goal:
             return False
       return True
-   
-   def tournament_selection(self):
+
+   def tournament_selection(self, strongest, weakest):
       survivors = []
-      random.shuffle(self.Dots)
-      half = len(self.Dots) // 2
+      survivors.append(self.Dots[strongest])
+      
+      selection_pool = [dot for i, dot in enumerate(self.Dots) if i != strongest and i != weakest]
+
+      random.shuffle(selection_pool)
+      half = len(selection_pool) // 2
       for i in range(half):
-         survivors.append(self.Dots[i] if self.Dots[i].fitness > self.Dots[i + half].fitness else self.Dots[i + half])
+         nod1 = selection_pool[i]
+         nod2 = selection_pool[i + half]
+         survivors.append(nod1 if nod1.fitness > nod2.fitness else nod2)
+
       return survivors
    
-   def mutation(self):
+   def gaussian_mutation(self):
       for dot in self.Dots:
-         if random.random() < MUTATION_CHANCE:
-            dot.Brain.mutation()
+         if random.random() < MUTATION_CHANCE and not dot.champion:
+            dot.Brain.gaussian_mutation()
 
    def new_generation(self, goal):
-      self.calculate_fitness(goal)
+      strongest, weakest = self.calculate_fitness(goal)
       newgen = []
-      newgen.extend(self.tournament_selection())
+      newgen.extend(self.tournament_selection(strongest, weakest))
       half = len(newgen)
       for i in range(0 , half - 1, 2):
          child1_dirs, child2_dirs = newgen[i].two_point_crossover(newgen[i+1])
@@ -71,5 +90,5 @@ class Population:
       
       random.shuffle(newgen)
       self.Dots = newgen
-      self.mutation()
+      self.gaussian_mutation()
       self.reset()

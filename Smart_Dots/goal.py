@@ -1,5 +1,5 @@
 import pygame
-from settings import WIDTH, RED, BLACK
+from settings import WIDTH, RED, WHITE
 
 class Goal:
     def __init__(self):
@@ -7,4 +7,4 @@ class Goal:
 
     def show(self, screen):
         pygame.draw.circle(screen, RED, self.pos, 7)
-        pygame.draw.circle(screen, BLACK, self.pos, 7, 2)
+        pygame.draw.circle(screen, WHITE, self.pos, 7, 2)

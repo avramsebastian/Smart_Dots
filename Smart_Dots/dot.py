@@ -1,14 +1,14 @@
 import pygame
 import random
 from brain import Brain
-from settings import HEIGHT, WIDTH, BLACK, BRAIN_SIZE, GREEN
+from settings import HEIGHT, WIDTH, CYAN, BRAIN_SIZE, GREEN
 
 class Dot :
     def __init__(self) :
         self.pos = pygame.Vector2(WIDTH // 2, 600)
         self.vel = pygame.Vector2(0, 0)
         self.acc = pygame.Vector2(0, 0)
-        self.color = BLACK
+        self.color = CYAN
         self.size = 3
         self.Brain = Brain()
         self.dead = False
@@ -17,10 +17,12 @@ class Dot :
         self.champion = False
 
     def show(self, screen) :
-        if self.champion is True:
+        if self.champion:
             self.color = GREEN
+            self.size = 4
         else:
-            self.color = BLACK
+            self.color = CYAN
+            self.size = 3
         pygame.draw.circle(screen,self.color,(self.pos[0],self.pos[1]),self.size)
 
     def reset(self):
@@ -43,7 +45,7 @@ class Dot :
         self.pos += self.vel
 
     def update(self, goal):
-        if self.dead is False and self.reach_goal is False:
+        if not self.dead and not self.reach_goal:
             self.move()
             if self.pos[0] < 2 or self.pos[1] < 2 or self.pos[0] > WIDTH - 2 or self.pos[1] > HEIGHT - 2 :
                 self.dead = True
@@ -53,11 +55,11 @@ class Dot :
                     self.reach_goal = True
 
     def calculate_fitness(self, goal):
-        if self.reach_goal is True:
-            self.fitness = 1.0 + 10000.0 / (self.Brain.step ** 2)
+        if self.reach_goal:
+            self.fitness = 10000.0 / (self.Brain.step + 1)
         else :
             distance_to_goal = self.pos.distance_to(goal.pos)
-            self.fitness = 1.0 / (distance_to_goal + 1)
+            self.fitness = 1.0 / ((distance_to_goal + 1) ** 2)
         
     def two_point_crossover(self, parent_b):
       start = random.randint(0, BRAIN_SIZE - 1)
