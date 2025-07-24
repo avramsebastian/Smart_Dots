@@ -23,6 +23,9 @@ class Population:
          else:
             dot.update(goal)
    
+   def count_reached_goal(self):
+       return sum(1 for dot in self.Dots if dot.reach_goal)
+
    def reset_champion(self):
       for dot in self.Dots:
          if dot.champion:
