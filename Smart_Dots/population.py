@@ -16,12 +16,12 @@ class Population:
       for dot in self.Dots:
           dot.show(screen)
 
-   def update(self, goal):
+   def update(self):
       for dot in self.Dots:
          if dot.Brain.step > self.max_steps:
             dot.dead = True
-         else:
-            dot.update(goal)
+         if not dot.dead:
+            dot.update()
    
    def count_reached_goal(self):
        return sum(1 for dot in self.Dots if dot.reach_goal)
@@ -32,14 +32,14 @@ class Population:
             dot.champion = False
             break
 
-   def calculate_fitness(self, goal):
+   def calculate_fitness(self):
       max_fitness = 0
       min_fitness = sys.maxsize
       max_index = -1
       min_index = -1
       self.reset_champion()
       for i in range(len(self.Dots)):
-         self.Dots[i].calculate_fitness(goal)
+         self.Dots[i].calculate_fitness()
          if max_fitness < self.Dots[i].fitness:
             max_fitness = self.Dots[i].fitness
             max_index = i
@@ -48,7 +48,8 @@ class Population:
             min_index = i
       if max_index != -1:
          self.Dots[max_index].champion = True
-         self.max_steps = self.Dots[max_index].Brain.step
+         if self.Dots[max_index].reach_goal:
+            self.max_steps = self.Dots[max_index].Brain.step
       return max_index, min_index
    
    def check_all_dots_dead(self):
@@ -77,8 +78,8 @@ class Population:
          if random.random() < MUTATION_CHANCE and not dot.champion:
             dot.Brain.gaussian_mutation()
 
-   def new_generation(self, goal):
-      strongest, weakest = self.calculate_fitness(goal)
+   def new_generation(self):
+      strongest, weakest = self.calculate_fitness()
       newgen = []
       newgen.extend(self.tournament_selection(strongest, weakest))
       half = len(newgen)

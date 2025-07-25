@@ -3,9 +3,37 @@ import matplotlib.pyplot as plt
 import numpy as np
 from population import Population
 from goal import Goal
-from settings import WIDTH,HEIGHT,BLACK,FPS,WHITE
+from obstacles import Obstacles
+from settings import WIDTH, HEIGHT, BLACK, FPS, WHITE
 
-def main():
+def display_plots(best_steps, reached_goal, generations):
+    x1points = np.array(best_steps)
+    ypoints = np.array(generations)
+    x2points = np.array(reached_goal)
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
+    fig.patch.set_facecolor("black")
+
+    ax1.set_facecolor("black")
+    ax1.plot(x1points, ypoints, color = "lime")
+    ax1.set_title("Steps To Reach The Goal Over Time", color = "white")
+    ax1.set_xlabel("Steps", color = "white")
+    ax1.set_ylabel("Generation", color = "white")
+    ax1.tick_params(colors = "white")
+    ax1.grid(True, color='gray', linestyle='--', linewidth=0.5)
+    ax1.invert_xaxis()
+
+    ax2.set_facecolor("black")
+    ax2.plot(x2points, ypoints, color = "lime")
+    ax2.set_title("Dots That Reached The Goal Over Time", color = "white")
+    ax2.set_xlabel("Dots Count", color = "white")
+    ax2.set_ylabel("Generation", color = "white")
+    ax2.tick_params(colors = "white")
+    ax2.grid(True, color='gray', linestyle='--', linewidth=0.5)
+
+    plt.show()
+
+def genetic_algorithm(best_steps, reached_goal, generations):
     pygame.init()
 
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -17,29 +45,28 @@ def main():
     clock = pygame.time.Clock()
     Pop = Population()
     goal = Goal()
-    best_steps = []
-    reached_goal = []
-    generations = []
+    obstacles = Obstacles()
     generation = 0
 
     running = True
     while running:
-        screen.fill(BLACK)
-
-        goal.show(screen)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+
+        screen.fill(BLACK)
+        goal.show(screen)
+        obstacles.show(screen)
 
         if Pop.check_all_dots_dead():
             best_steps.append(Pop.max_steps)
             reached_goal.append(Pop.count_reached_goal())
             generations.append(generation)
             generation += 1
-            Pop.new_generation(goal)
+            Pop.new_generation()
         else:
-            Pop.update(goal)
+            Pop.update()
             Pop.show(screen)
 
         font = pygame.font.SysFont("Segoe UI", 20, bold = False)
@@ -54,42 +81,14 @@ def main():
         clock.tick(FPS)
 
     pygame.quit()
+    
 
-    xpoints = np.array(best_steps)
-    ypoints = np.array(generations)
-
-    fig, ax = plt.subplots()
-    fig.patch.set_facecolor("black")
-    ax.set_facecolor("black")
-
-    ax.plot(xpoints, ypoints, color = "lime")
-    ax.set_title("Steps To Reach The Goal Over Time", color = "white")
-    ax.set_xlabel("Steps", color = "white")
-    ax.set_ylabel("Generation", color = "white")
-    ax.tick_params(colors = "white")
-    ax.grid(True, color='gray', linestyle='--', linewidth=0.5)
-
-    plt.gca().invert_xaxis()
-    plt.tight_layout()
-    plt.show()
-
-
-    xpoints = np.array(reached_goal)
-    ypoints = np.array(generations)
-
-    fig, ax = plt.subplots()
-    fig.patch.set_facecolor("black")
-    ax.set_facecolor("black")
-
-    ax.plot(xpoints, ypoints, color = "lime")
-    ax.set_title("Dots That Reached The Goal Over Time", color = "white")
-    ax.set_xlabel("Dots Count", color = "white")
-    ax.set_ylabel("Generation", color = "white")
-    ax.tick_params(colors = "white")
-    ax.grid(True, color='gray', linestyle='--', linewidth=0.5)
-
-    plt.tight_layout()
-    plt.show()
+def main():
+    best_steps = []
+    reached_goal = []
+    generations = []
+    genetic_algorithm(best_steps, reached_goal, generations)
+    display_plots(best_steps, reached_goal, generations)
 
 if __name__ == "__main__":
     main()
