@@ -39,9 +39,6 @@ def genetic_algorithm(best_steps, reached_goal, generations):
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("Smart Dots")
 
-    # img = pygame.image.load('gfg_image.jpg')
-    # pygame.display.set_icon(img)
-
     clock = pygame.time.Clock()
     Pop = Population()
     goal = Goal()
