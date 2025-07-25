@@ -15,8 +15,8 @@ Smart Dots is an interactive simulation written in Python using the `pygame` lib
 ### 1. Clone the Repository
 
 ```bash
-https://github.com/your-username/smart-dots.git
-cd smart-dots
+https://github.com/avramsebastian/Smart_Dots.git
+cd Smart_Dots
 ```
 
 ### 2. Install Dependencies
