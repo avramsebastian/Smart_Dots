@@ -21,10 +21,10 @@ cd Smart_Dots
 
 ### 2. Install Dependencies
 
-Make sure Python 3 is installed, then install `pygame`:
+Make sure Python 3 is installed :
 
 ```bash
-pip install pygame
+pip install -r requirements.txt
 ```
 
 ### 3. Run the Simulation
